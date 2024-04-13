@@ -2,46 +2,99 @@ import asyncio
 import websockets
 import json
 import Twitch
-import random
 
 IP_ADDR = "0.0.0.0"
 IP_PORT = "8421"
 global state
-state = True
-group_id = xxxxxxxxx
+state = False
+global Test_group
+Test_group = 958202417
+global sunshine_group
+sunshine_group = 859055590
 
-# 接收从客户端发来的消息并处理，再返给客户端
-async def serverinteractive(websocket):
+def Set_Level():
+    global sunshine_group
+    global Test_group
+    print("choose the mode to start with[DEBUG/NORMAL]")
+    while(True):
+        level = input()
+        if level == "DEBUG":
+            sunshine_group = Test_group
+            print("DEBUG mode starts!")
+            return
+        if level == "NORMAL":
+            print("NORMAL mode starts!")
+            return
+        else:
+            print("don't know what are u talking about")
+
+async def send_group_at_all_msg(websocket,group_id,content):
+    data = {
+        "action":"send_group_msg",
+        "params":
+        {
+            "group_id":group_id,
+            "message":
+            [
+            {"type": "at","data": {"qq":"all"}},
+            {"type": "text","data": {"text": f"{content}"}}
+            ]
+        }
+    }
+    print('\nsunshinebread went alive,sending group msg\n')
+    state = True
+    await websocket.send(json.dumps(data))
+
+async def send_group_to_msg(websocket,group_id,content):
+    data = {
+        "action":"send_group_msg",
+        "params":
+            {
+                "group_id":group_id,
+                "message":{"type": "text","data": {"text": f"{content}"}}
+            }
+        }
+    print(f'\ntriggered by private message\n')
+    await websocket.send(json.dumps(data))
+
+async def mainfunc(websocket):
+    # main_function
+    global sunshine_group
+    global Test_group
     global state
     while True:
         recv_text = await websocket.recv()
         recv_text = json.loads(recv_text)
-        recv_text = json.dumps(recv_text,indent = 2)
+        # recv_text = json.dumps(recv_text,indent = 2)
         print(recv_text)
-        if random.randint(1, 10) > 6:
-            print('[INFO]:good roll')
-            game,title = Twitch.check_online('sunshinebread')
-            print(game)
-            if game:
-                if state == False:
-                    data = {"action":"send_group_notice","params":{"group_id":group_id,"content":f"sunshinebread is online,{game},{title}"}}
-                    print('sunshinebread went alive,sending group notice')
-                    state = True
-                    await websocket.send(json.dumps(data))
-            elif state == True:
-                data = {"action":"send_group_notice","params":{"group_id":group_id,"content":f"sunshinebread is not online"}}
-                print('sunshinebread went offline,sending group notice')
-                state = False
-                await websocket.send(json.dumps(data))
-        else:
-            print('[INFO]:bad roll')
 
-# 接收数据
+        if (recv_text.get("sub_type") == "friend"):
+            await send_group_to_msg(websocket,Test_group,"i am still alive!")
+            return
+            #only to check the Bot live condition with my phone
+            #this msg will be send to my test group in any condition
+
+        game,title = Twitch.check_online('sunshinebread')
+        print(f'game: {game}\ntitle:{title}')
+
+        if game:#this means sunshinebread is alive
+            if state == False:#this means havn't sent it
+                await send_group_at_all_msg(websocket,sunshine_group,f"sunshinebread went alive,{game},{title}")
+                #so send it
+
+        else:#this means sunshinebread is not alive
+            if state == True:#this means havn't sent it
+                await send_group_at_all_msg(websocket,sunshine_group,"sunshinebread went offline")
+                #so send it
+
 async def serverRun(websocket,path):
-    await serverinteractive(websocket)
+    await mainfunc(websocket)
 
 async def main():
-    print("======server main begin======")
+    Set_Level()
+    #sometimes i need to test new function,so i can set DEBUG mode
+    #in this way,i send all my msg in my test group
+    print("========================server main begin========================")
     server = await websockets.serve(serverRun, IP_ADDR, IP_PORT)
     await server.wait_closed()
 
