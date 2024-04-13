@@ -4,13 +4,13 @@ import json
 import Twitch
 
 IP_ADDR = "0.0.0.0"
-IP_PORT = "xxxxxx"you can choose what port to open in your server
+IP_PORT = "8421"
 global state
 state = False
 global Test_group
-Test_group = xxxxxxxx
+Test_group = 958202417
 global sunshine_group
-sunshine_group = xxxxxxxx
+sunshine_group = 859055590
 
 def Set_Level():
     global sunshine_group
@@ -75,17 +75,19 @@ async def mainfunc(websocket):
             #this msg will be send to my test group in any condition
 
         game,title = Twitch.check_online('sunshinebread')
-        print(f'game: {game}\ntitle:{title}')
+        print(f'\ngame: {game}\ntitle:{title}\n')
 
         if game:#this means sunshinebread is alive
             if state == False:#this means havn't sent it
                 await send_group_at_all_msg(websocket,sunshine_group,f"sunshinebread went alive,{game},{title}")
                 #so send it
+                state = True#also change the state
 
         else:#this means sunshinebread is not alive
             if state == True:#this means havn't sent it
                 await send_group_at_all_msg(websocket,sunshine_group,"sunshinebread went offline")
                 #so send it
+                state = False#also change the state
 
 async def serverRun(websocket,path):
     await mainfunc(websocket)
