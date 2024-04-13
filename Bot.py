@@ -47,7 +47,6 @@ async def send_group_at_all_msg(websocket,group_id,content):
         }
     }
     print(f'\nsending group msg\n')
-    state = True
     await websocket.send(json.dumps(data))
 
 async def send_group_to_msg(websocket,group_id,content):
