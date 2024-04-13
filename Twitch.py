@@ -24,6 +24,6 @@ stream_data =api_result.json()
 
 #根据api返回的结果判断是否在线
 if len(stream_data['data']) == 1:
-    print(streamer_name + ' 在线,正在玩' + stream_data['data'][0]['game_name'] + stream_data['data'][0]['title'])
+    print('\n' + streamer_name + ' 在线,正在玩' + stream_data['data'][0]['game_name'] + stream_data['data'][0]['title'])
 else:
-    print(streamer_name + ' 不在线')
+    print('\n' + streamer_name + ' 不在线')
