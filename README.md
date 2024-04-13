@@ -20,3 +20,7 @@
 在外面时可以通过用大号给机器人私发消息，如果机器人活着，会在测试群发一句'i am still alive!'。
 
 我的qq是88665013，如果有需要可以找我，我会尽力帮忙（大概
+
+目前效果是这样，如果开始的时候选NORMAL的话就是[NORMAL]
+
+![dde8bdece1eb0c2acad91a3065fc1828](https://github.com/dbgbgtf1/Twitch--qqBot/assets/149954065/21ffb1a3-5abe-4499-b9df-3b60a6bf210b)
