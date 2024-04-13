@@ -5,12 +5,16 @@ import Twitch
 
 IP_ADDR = "0.0.0.0"
 IP_PORT = "8421"
+
 global state
-state = False
 global Test_group
-Test_group = 958202417
 global sunshine_group
-sunshine_group = 859055590
+global streamer
+
+state = False#<------------------------------------this need to be set correctly when you start your server
+Test_group = xxxxxxxxxx
+sunshine_group = xxxxxxxxxxx
+streamer = 'sunshinebread'#your streamer name here
 
 def Set_Level():
     global sunshine_group
@@ -29,6 +33,7 @@ def Set_Level():
             print("don't know what are u talking about")
 
 async def send_group_at_all_msg(websocket,group_id,content):
+    global streamer
     data = {
         "action":"send_group_msg",
         "params":
@@ -41,11 +46,12 @@ async def send_group_at_all_msg(websocket,group_id,content):
             ]
         }
     }
-    print('\nsunshinebread went alive,sending group msg\n')
+    print(f'\nsending group msg\n')
     state = True
     await websocket.send(json.dumps(data))
 
 async def send_group_to_msg(websocket,group_id,content):
+    global streamer
     data = {
         "action":"send_group_msg",
         "params":
@@ -62,6 +68,7 @@ async def mainfunc(websocket):
     global sunshine_group
     global Test_group
     global state
+    global streamer
     while True:
         recv_text = await websocket.recv()
         recv_text = json.loads(recv_text)
@@ -74,20 +81,18 @@ async def mainfunc(websocket):
             #only to check the Bot live condition with my phone
             #this msg will be send to my test group in any condition
 
-        game,title = Twitch.check_online('sunshinebread')
-        print(f'\ngame: {game}\ntitle:{title}\n')
+        game,title = Twitch.check_online(f'{streamer}')
+        print(f'game: {game}\ntitle:{title}')
 
-        if game:#this means sunshinebread is alive
+        if game:#this means streamer is alive
             if state == False:#this means havn't sent it
-                await send_group_at_all_msg(websocket,sunshine_group,f"sunshinebread went alive,{game},{title}")
-                #so send it
-                state = True#also change the state
+                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}")
+                state = True#so send it and also change the state
 
-        else:#this means sunshinebread is not alive
+        else:#this means streamer is not alive
             if state == True:#this means havn't sent it
-                await send_group_at_all_msg(websocket,sunshine_group,"sunshinebread went offline")
-                #so send it
-                state = False#also change the state
+                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went offline")
+                state = False#so send it and also change the state
 
 async def serverRun(websocket,path):
     await mainfunc(websocket)
