@@ -4,13 +4,13 @@ import json
 import Twitch
 
 IP_ADDR = "0.0.0.0"
-IP_PORT = "8421"
+IP_PORT = "xxxxxx"you can choose what port to open in your server
 global state
 state = False
 global Test_group
-Test_group = 958202417
+Test_group = xxxxxxxx
 global sunshine_group
-sunshine_group = 859055590
+sunshine_group = xxxxxxxx
 
 def Set_Level():
     global sunshine_group
