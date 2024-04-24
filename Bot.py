@@ -1,26 +1,28 @@
 import asyncio
 import websockets
-import json
 import Twitch
+import bili
 import logging
+import json
+import time
 
 IP_ADDR = "0.0.0.0"
-IP_PORT = "8421"
+IP_PORT = "xxxx"
 
-global state
-global Test_group
-global sunshine_group
-global streamer
-
-state = True
-Test_group = xxxxxxxx
-sunshine_group = xxxxxxxxx
-streamer = 'sunshinebread'
-
+Test_group = xxxxxx你可以用来测试Bot的小群
+sunshine_group = xxxxxx你想要推送的主群
+streamer = 'sunshinebread'#你想推送的主播在Twitch台主播名
+state = 'online'
+up_list = {}
+up_list['小小小Janey'] = 32149224
+up_list['TheOnlyShark'] = 517913954
+up_list['COMAYUMI'] = 14445191
+up_list['HeNTa1111'] = 1114874220
+up_list['sunshine102506'] = 3537124194257576
+#欢迎大家关注这几个uphhh
 
 def Set_Level():
     global sunshine_group
-    global Test_group
     print("choose the mode to start with[DEBUG/NORMAL]")
     while(True):
         level = input()
@@ -37,7 +39,6 @@ def Set_Level():
             print("don't know what are u talking about\n")
 
 async def send_group_at_all_msg(websocket,group_id,content):
-    global streamer
     data = {
         "action":"send_group_msg",
         "params":
@@ -46,67 +47,60 @@ async def send_group_at_all_msg(websocket,group_id,content):
             "message":
             [
             {"type": "at","data": {"qq":"all"}},
-            {"type": "text","data": {"text": f"{content}"}}
+            {"type": "text","data": {"text": content}}
             ]
         }
     }
-    logging.warning(f'sending group msg\n')
     await websocket.send(json.dumps(data))
 
-async def send_group_to_msg(websocket,group_id,content):
-    global streamer
+async def send_to_group_msg(websocket,group_id,content):
     data = {
         "action":"send_group_msg",
         "params":
             {
                 "group_id":group_id,
-                "message":{"type": "text","data": {"text": f"{content}"}}
+                "message":{"type": "text","data": {"text": content}}
             }
         }
-    logging.warning(f'triggered by private message\n')
     await websocket.send(json.dumps(data))
 
 async def mainfunc(websocket):
-    # main_function
-    global sunshine_group
-    global Test_group
     global state
-    global streamer
     while True:
-        recv_text = await websocket.recv()
-        recv_text = json.loads(recv_text)
-        # recv_text = json.dumps(recv_text,indent = 2)
-        logging.warning('\n' + json.dumps(recv_text,indent = 2) + '\n')
+        logging.warning('starting main program ...')
 
-        if (recv_text.get("sub_type") == "friend"):
-            await send_group_to_msg(websocket,Test_group,"i am still alive!")
-            return
-            #only to check the Bot live condition with my phone
-            #this msg will be send to my test group in any condition
-
-        game,title = Twitch.check_online(f'{streamer}')
-
-        if game:#this means streamer is alive
-            logging.warning(f'{streamer}在线\n')
-            logging.warning(f'game: {game}\n')
+        game,title = Twitch.check_online(streamer)
+        if game:
+            logging.warning(f'{streamer}在线')
+            logging.warning(f'game: {game}')
             logging.warning(f'title:{title}\n')
-            if state == False:#this means havn't sent it
-                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}")
-                state = True#so send it and also change the state
-
-        else:#this means streamer is not alive
+            if state == 'offline':
+                state = 'online'
+                #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}"))
+                asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}"))
+                logging.warning(f'sending group msg\n')
+        else:
             logging.warning(f'{streamer}不在线\n')
-            if state == True:#this means havn't sent it
-                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went offline")
-                state = False#so send it and also change the state
+            if state == 'online':
+                state = 'offline'
+                #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"{streamer} went offline"))
+                asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went offline"))
+                logging.warning(f'sending group msg\n')
+
+        up_name,media_title,media_link = await bili.get_up_video(up_list)
+
+        if up_name:
+            #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"Janey's new video!{media_title},{media_link}"))
+            asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{up_name}发布了新视频!{media_title},{media_link}"))
+            logging.warning(f'sending group msg\n')
+        print('\n\n')
+        await asyncio.sleep(60)#设置间隔，我不希望访问直播状态过于频繁
 
 async def serverRun(websocket,path):
     await mainfunc(websocket)
 
 async def main():
-    Set_Level()
-    #sometimes i need to test new function,so i can set DEBUG mode
-    #in this way,i send all my msg in my test group
+    Set_Level()#主要是用来测试，防止新功能出问题在大群里一直乱发消息
     print("========================server main begin========================")
     server = await websockets.serve(serverRun, IP_ADDR, IP_PORT)
     await server.wait_closed()
