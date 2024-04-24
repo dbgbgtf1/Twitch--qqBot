@@ -1,26 +1,62 @@
-# Twitch->qqBot
-借用openshamrock框架实现的一个机器人，其作用是从Twitch台获取主播直播信息并向qq群推送。
+# Twitch，b站->qqBot
 
-本项目是部署在服务器的后端程序，前端是手机上的openshamrock软件,我使用lspatch加上openshamrock加上lspatch修复过的qq。
+#### what can it do
 
-我使用了websocket通信，因为不知道怎么做到服务器主动连接手机。（手机毕竟没有公网ip，涉及到内网又很麻烦）
+这是一个服务器上的后端项目，其作用是定时获取Twitch台指定主播在线状态及b站指定up的新视频，并且将其推送指qq群聊.
 
-所以现在的解决方案是利用openshamrock上定时向服务器的传输的heartbeat(大概是叫这个？)，来维持稳定通信。
+手机上打开被动websocket，设置端口和服务器公网ip作为websocket连接地址即可。
 
-缺点是必须保持手机端的openshamrock和qq不被后台杀掉。
+具体操作可以去看看openshamrock的github主页
 
-每次手机向服务器传输确认信息的时候，就让服务器检查Twitch台主播通信状态。
+___
 
-2024.4.13更新
+#### how you use it
 
-把at全体群成员及发送群消息两个功能做了简单封装，升级了DEBUG和NORMAL模式，方便调试。
+指定主播和up需要直接对代码块修改，有点麻烦并且可能出错，i know，下次试试解决这个问题。
 
-加了一个检查机器人是否在线的简单功能。场景是Bot正在宿舍的手机上面运行。
+__指定主播的功能需要在Bot.py里面更改`stream`变量的值即可，将其改成Twitch台主播的名字。__
 
-在外面时可以通过用大号给机器人私发消息，如果机器人活着，会在测试群发一句'i am still alive!'。
+__指定up的功能则需要在Bot.py里面改掉up主的名字和uid号。__
 
-我的qq是88665013，如果有需要可以找我，我会尽力帮忙（大概
+```python
+up_list = {}
+up_list['小小小Janey'] = 32149224
+up_list['TheOnlyShark'] = 517913954
+up_list['COMAYUMI'] = 14445191
+up_list['HeNTa1111'] = 1114874220
+up_list['sunshine102506'] = 3537124194257576
+#欢迎大家来关注这些up
+```
 
-目前效果是这样，如果开始的时候选NORMAL的话就是[NORMAL]
+以上两个功能如果想要在bili.py和Twitch.py里面单独测试，都需要在这两个文件里单独再改。
 
-![dde8bdece1eb0c2acad91a3065fc1828](https://github.com/dbgbgtf1/Twitch--qqBot/assets/149954065/21ffb1a3-5abe-4499-b9df-3b60a6bf210b)
+**以及指定up的功能还需要再项目当前目录下创建与up主名字同名的文件。**
+
+```shell
+touch 小小小Janey
+```
+
+**最后是服务器端口设置及群聊号设置。**
+
+端口没有什么特别讲究，只要和手机上openshamrock保持一致即可
+
+```python
+IP_ADDR = "0.0.0.0"
+IP_PORT = "8421"
+
+Test_group = xxxxxxxx#没什么人，或全是机器人的群
+sunshine_group = 859055590#要推送的主群
+```
+
+Test_group在你启动项目设置DEBUG模式时会被用到，**在DEBUG模式下，所有消息都会被发送到Test_group。**
+
+用于在大片更改代码之后心里没底的时候测试用，防止机器人出事把主群炸了。
+### 最后是项目效果
+
+![image-20240424233354552](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233354552.png)
+![image-20240424233419784](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233419784.png)
+![image-20240424233447420](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233447420.png)
+
+
+
+
