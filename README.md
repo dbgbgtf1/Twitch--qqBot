@@ -52,10 +52,11 @@ Test_group在你启动项目设置DEBUG模式时会被用到，**在DEBUG模式�
 
 用于在大片更改代码之后心里没底的时候测试用，防止机器人出事把主群炸了。
 ### 最后是项目效果
+![image](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/d1a9c52c-2b38-48a0-b8b6-965b20fc6777)
 
-![image-20240424233354552](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233354552.png)
-![image-20240424233419784](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233419784.png)
-![image-20240424233447420](C:\Users\cjy\AppData\Roaming\Typora\typora-user-images\image-20240424233447420.png)
+![30637e44dab0aec227e2ecc302857fe6](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/e57d2bc7-7fd5-4edb-ba46-61baa04f70f3)
+
+![image](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/b08a6201-e1b4-44c5-959a-f4787609a239)
 
 
 
