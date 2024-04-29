@@ -4,13 +4,14 @@ import Twitch
 import bili
 import logging
 import json
-import time
+import datetime
+import pytz
 
 IP_ADDR = "0.0.0.0"
-IP_PORT = "xxxx"
+IP_PORT = "8421"
 
-Test_group = xxxxxx你可以用来测试Bot的小群
-sunshine_group = xxxxxx你想要推送的主群
+Test_group = 9272775600#你可以用来测试Bot的小群
+sunshine_group = 859055590#你想要推送的主群
 streamer = 'sunshinebread'#你想推送的主播在Twitch台主播名
 state = 'online'
 up_list = {}
@@ -64,45 +65,44 @@ async def send_to_group_msg(websocket,group_id,content):
         }
     await websocket.send(json.dumps(data))
 
-async def mainfunc(websocket):
+async def mainfunc(websocket,path):
     global state
     while True:
         logging.warning('starting main program ...')
 
-        game,title = Twitch.check_online(streamer)
-        if game:
+        game,title,viewer_count = Twitch.check_online(streamer)
+        if game != "False":
             logging.warning(f'{streamer}在线')
-            logging.warning(f'game: {game}')
-            logging.warning(f'title:{title}\n')
+            logging.warning(f'game:{game}')
+            logging.warning(f'title:{title}')
+            logging.warning(f'viewer_count:{viewer_count}\n')
+
             if state == 'offline':
                 state = 'online'
-                #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}"))
-                asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went alive,{game},{title}"))
+                now = datetime.datetime.now(tz=pytz.timezone('US/Eastern'))
+                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer}上线啦,纽约时间{now.hour}:{now.minute},正在玩{game},{title},目前有{viewer_count}在看,直播间链接:https://www.twitch.tv/{streamer}")
                 logging.warning(f'sending group msg\n')
         else:
             logging.warning(f'{streamer}不在线\n')
             if state == 'online':
                 state = 'offline'
-                #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"{streamer} went offline"))
-                asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{streamer} went offline"))
+                now = datetime.datetime.now(tz=pytz.timezone('US/Eastern'))
+                await send_group_at_all_msg(websocket,sunshine_group,f"{streamer}下机喽,纽约时间{now.hour}:{now.minute}")
                 logging.warning(f'sending group msg\n')
 
         up_name,media_title,media_link = await bili.get_up_video(up_list)
 
-        if up_name:
-            #asyncio.create_task(send_to_group_msg(websocket,sunshine_group,f"Janey's new video!{media_title},{media_link}"))
-            asyncio.create_task(send_group_at_all_msg(websocket,sunshine_group,f"{up_name}发布了新视频!{media_title},{media_link}"))
+        if up_name != "False":
+            await send_group_at_all_msg(websocket,sunshine_group,f"{up_name}发布了新视频!{media_title},{media_link}")
             logging.warning(f'sending group msg\n')
-        print('\n\n')
-        await asyncio.sleep(60)#设置间隔，我不希望访问直播状态过于频繁
-
-async def serverRun(websocket,path):
-    await mainfunc(websocket)
+        now = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai'))
+        logging.warning(f'{now}\n\n')
+        await asyncio.sleep(60)#设置间隔，我不希望访问过于频繁
 
 async def main():
     Set_Level()#主要是用来测试，防止新功能出问题在大群里一直乱发消息
-    print("========================server main begin========================")
-    server = await websockets.serve(serverRun, IP_ADDR, IP_PORT)
+    print(f"========================server main run at {IP_ADDR}:{IP_PORT}========================")
+    server = await websockets.serve(mainfunc, IP_ADDR, IP_PORT)
     await server.wait_closed()
 
 asyncio.run(main())
