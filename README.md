@@ -52,13 +52,11 @@ Test_group在你启动项目设置DEBUG模式时会被用到，**在DEBUG模式�
 
 用于在大片更改代码之后心里没底的时候测试用，防止机器人出事把主群炸了。
 ### 最后是项目效果
-![43ae69a8be0f4370d8ac70ab003af35e](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/c7242568-2cbe-431a-8798-afbda942fe0d)
 
-![30637e44dab0aec227e2ecc302857fe6](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/e57d2bc7-7fd5-4edb-ba46-61baa04f70f3)
+![image](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/6e1eb501-4fa8-44ca-a801-2987bcd8be04)
+![fbf502fb41e63b3f15c2e83fb63d0333](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/5e852ff7-c0f3-40ac-9ca7-b90615197d94)
+![image](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/b1022163-c269-4164-a6ae-8e0eefa58985)
 
-![image](https://github.com/dbgbgtf1/Twitch-bili--QQBot/assets/149954065/b08a6201-e1b4-44c5-959a-f4787609a239)
-
-最后两张图还没更新成最新的效果
 
 
 
